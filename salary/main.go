@@ -3,6 +3,8 @@ package main
 import (
 	"fmt"
 
+	"strconv"
+
 	"github.com/eiannone/keyboard"
 	"github.com/fatih/color"
 )
@@ -42,6 +44,8 @@ func printSelections(selections []string, currentSelection int) {
 }
 
 func listenForInputs() {
+
+	// 1. Pick Hourly, Daily, Monthly
 	var currentSelection int
 	fmt.Println("Select (press [^] [v] to choose):")
 	selections := []string{"Hourly", "Daily", "Monthly"}
@@ -76,6 +80,7 @@ func listenForInputs() {
 	fmt.Println("")
 	fmt.Println("")
 
+	// 2. Pick Currency and Cash
 	var currencyIdx int = 1
 	currencySelections := []string{"USD", "PHP"}
 	var salaryInput string = ""
@@ -102,9 +107,23 @@ func listenForInputs() {
 			}
 		} else if char >= '0' && char <= '9' {
 			salaryInput += string(char)
+		} else if key == keyboard.KeyEnter {
+			break
 		}
+
 		printCurrencySelect(currencySelections, currencyIdx, selections, currentSelection, salaryInput)
 	}
+
+	fmt.Println("")
+	fmt.Println("")
+
+	// 3. Calculate
+	salary, err := strconv.ParseFloat(salaryInput, 64)
+	if err != nil {
+		fmt.Println("Error parsing float:", err)
+		return
+	}
+	calculateSalary(currencySelections[currencyIdx], selections[currentSelection], salary)
 
 }
 
@@ -129,4 +148,27 @@ func printCurrencySelect(currencySelections []string, currentIdx int, timelySele
 	fmt.Printf(" %s ", timelySelections[timelyIdx])
 	color.Unset()
 	fmt.Printf("Salary (%s): %s", currencySelections[currentIdx], salaryInput)
+}
+
+/*
+	@param currency USD or PHP
+
+@param timely Hourly, Daily, Monthly
+*/
+func calculateSalary(currency string, timely string, salary float64) {
+	USD_EXCHANGERATE := 55.75
+	if currency == "USD" {
+		salary *= USD_EXCHANGERATE
+	}
+
+	// salary * 5 days a week, 4 weeks a month, 12 months a year
+	if timely == "Daily" {
+		salary = salary * 5 * 4 * 12
+	} else if timely == "Hourly" {
+		salary = salary * 8 * 5 * 4 * 12
+	} else if timely == "Monthly" {
+		salary = salary * 12
+	}
+
+	fmt.Printf("You are expected to make PHP %.2f/year", salary)
 }
