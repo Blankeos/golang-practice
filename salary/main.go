@@ -12,7 +12,7 @@ import (
 // Colors
 var yellow = color.New(color.FgYellow).SprintFunc()
 var cyan_underline = color.New(color.FgCyan, color.Bold, color.Underline).SprintFunc()
-var bold = color.New(color.Bold)
+var bold = color.New(color.Bold, color.FgYellow)
 
 func main() {
 	fmt.Printf("💵 %s to the %s App\n", yellow("Welcome"), cyan_underline("Salary Estimator"))
