@@ -36,8 +36,7 @@ func main() {
 
 	app.Get("/books", getBooks)
 	app.Get("/books/:id", getBook)
-	// app.Get("/books/:id", getBook)
-	// app.Post("/books", createBook)
+	app.Post("/books", createBook)
 	// app.Put("/books/:id", updateBook)
 	// app.Delete("/books/:id", deleteBook)
 
@@ -63,4 +62,18 @@ func getBook(c *fiber.Ctx) error {
 
 	// Didn't find anything
 	return c.SendString(fmt.Sprintf("Cannot find book with ID: %s", bookID))
+}
+
+func createBook(c *fiber.Ctx) error {
+	// Create a new book object
+	var book Book
+	if err := c.BodyParser(&book); err != nil {
+		return err
+	}
+
+	// Add the new book tot he books slice
+	books = append(books, book)
+
+	// Return the created book as JSON
+	return c.JSON(book)
 }
