@@ -30,9 +30,9 @@ func main() {
 	// API ROUTES
 
 	// ---> Basic Example
-	// app.Get("/", func(c *fiber.Ctx) error {
-	// 	return c.SendString("Hello, World!")
-	// })
+	app.Get("/", func(c *fiber.Ctx) error {
+		return c.SendString("Hello, World!")
+	})
 
 	app.Get("/books", getBooks)
 	app.Get("/books/:id", getBook)
