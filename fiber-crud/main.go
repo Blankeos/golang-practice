@@ -7,7 +7,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-// Makeshift Database:
+// s-- Makeshift Database --
 type Book struct {
 	ID     string `json:"id"`
 	Title  string `json:"title"`
@@ -15,6 +15,8 @@ type Book struct {
 }
 
 var books []Book
+
+// e-- Makeshift Database --
 
 func main() {
 
@@ -27,22 +29,21 @@ func main() {
 	// --- Fiber App ---
 	app := fiber.New()
 
-	// API ROUTES
-
-	// ---> Basic Example
+	// s-- API ROUTES --
 	app.Get("/", func(c *fiber.Ctx) error {
 		return c.SendString("Hello, World!")
 	})
-
+	// --- Fiber App ---
 	app.Get("/books", getBooks)
 	app.Get("/books/:id", getBook)
 	app.Post("/books", createBook)
-	// app.Put("/books/:id", updateBook)
+	app.Put("/books/:id", updateBook)
 	// app.Delete("/books/:id", deleteBook)
 
 	log.Println("Running server on http://localhost:3000")
+	// e-- API ROUTES --
+
 	app.Listen(":3000")
-	// --- Fiber App ---
 }
 
 func getBooks(c *fiber.Ctx) error {
@@ -71,9 +72,30 @@ func createBook(c *fiber.Ctx) error {
 		return err
 	}
 
-	// Add the new book tot he books slice
+	// Add the new book to the books slice
 	books = append(books, book)
 
 	// Return the created book as JSON
 	return c.JSON(book)
+}
+
+func updateBook(c *fiber.Ctx) error {
+	bookID := c.Params("id", "0")
+
+	var updatedBook Book
+	if err := c.BodyParser(&updatedBook); err != nil {
+		return err
+	}
+
+	// Find the book
+	for i := 0; i < len(books); i++ {
+		log.Printf("%s == %s", books[i].ID, bookID)
+		if books[i].ID == bookID {
+			books[i] = updatedBook
+			return c.JSON(updatedBook)
+		}
+	}
+
+	// Didn't find anything
+	return c.SendString(fmt.Sprintf("Cannot find book with ID: %s", bookID))
 }
