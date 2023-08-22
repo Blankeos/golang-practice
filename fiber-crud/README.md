@@ -5,7 +5,7 @@ We use books (no database here). Just getting familiar with the syntax for makin
 ### Get Started
 
 1. `go build`
-2. `go run fiber-crud.exe`
+2. `go run fiber-crud`
 
 ### API Docs
 
