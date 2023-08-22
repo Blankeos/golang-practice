@@ -17,3 +17,7 @@ runs your project
 #### 4. `go mod tidy`
 
 - if you have your package_url as import "<package_url>", it's possible to do go mod tidy to automatically get it.
+
+### 5. go mod edit -replace example.com/greetings=../greetings
+
+replaces the current example.com/greetings module (which is currently not in a repository) to a local path.
