@@ -9,7 +9,7 @@ Projects on this repo:
 3. fiber-crud - Book API with CRUD operations
 4. aternos-bot - WIP chromedp app that goes to Aternos and starts the server for you.
 5. hello - go basics (i have notes to create project and stuff here)
-6. greetings
+6. greetings - 
 
 ### Resources
 
