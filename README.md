@@ -13,7 +13,8 @@ Projects on this repo:
 
 5. hello - go basics (i have notes to create project and stuff here)
 6. greetings - A custom external module used in hello (with unit tests)
-7. data-access - basics of accessing databases with the standard library.
+7. workspace - getting used to multiple modules in one workspace.
+8. data-access - basics of accessing databases with the standard library.
 
 ### Resources
 
