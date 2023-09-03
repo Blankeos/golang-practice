@@ -26,13 +26,15 @@ var albums = []album{
 	{ID: 3, Title: "Sarah Vaughan and Clifford Brown", Artist: "Sarah Vaughan", Price: 39.99},
 }
 
+
+// + ------------------ HANDLERS ------------------ + //
 // getAlbums responds with the list of all albums as JSON.
 func getAlbums(c *gin.Context) {
 	c.IndentedJSON(http.StatusOK, albums)
 }
 
-// getAlbum responds with 1 album as JSON
-func getAlbum(c *gin.Context) {
+// getAlbumById responds with 1 album as JSON
+func getAlbumById(c *gin.Context) {
 	var id, found = c.GetQuery("id")
 
 	// Ensure ID is found on the context.
@@ -63,8 +65,26 @@ func getAlbum(c *gin.Context) {
 	} else {
 		c.IndentedJSON(http.StatusNotFound, "Album not found!")
 	}
-	
 }
+
+// postAlbums adds a new album from JSON received in the request body.
+func postAlbums(c *gin.Context) {
+	var newAlbum album
+
+	// Call BindJSON to bind the received JSON to
+	// newAlbum.
+	if err := c.BindJSON(&newAlbum); err != nil {
+		c.IndentedJSON(http.StatusNotAcceptable, "Cannot bind request body to album")
+		return
+	}
+
+	// Add the new album to the slice
+	albums = append(albums, newAlbum)
+	c.IndentedJSON(http.StatusOK, newAlbum)
+}
+
+// ! ------------------ HANDLERS ------------------ ! //
+
 func main() {
 	// Create a channel to receive signals.
 	quit := make(chan os.Signal, 1)
@@ -72,7 +92,8 @@ func main() {
 	
 	router := gin.Default()
 	router.GET("/albums", getAlbums)
-	router.GET("/album", getAlbum)
+	router.GET("/album", getAlbumById)
+	router.POST("/albums", postAlbums)
 
 	fmt.Printf("Running Application on http://localhost:8080\n")
 
