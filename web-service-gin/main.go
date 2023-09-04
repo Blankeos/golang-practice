@@ -33,8 +33,8 @@ func getAlbums(c *gin.Context) {
 	c.IndentedJSON(http.StatusOK, albums)
 }
 
-// getAlbumById responds with 1 album as JSON
-func getAlbumById(c *gin.Context) {
+// getAlbum responds with 1 album as JSON
+func getAlbum(c *gin.Context) {
 	var id, found = c.GetQuery("id")
 
 	// Ensure ID is found on the context.
@@ -83,6 +83,28 @@ func postAlbums(c *gin.Context) {
 	c.IndentedJSON(http.StatusOK, newAlbum)
 }
 
+func getAlbumById(c *gin.Context) {
+	id := c.Param("id")
+
+	// Convert id (string) to int.
+	intId, err := strconv.Atoi(id);
+	if err != nil {
+		c.IndentedJSON(http.StatusBadRequest, "😭 Invalid ID (not an int)!")
+		return
+	}
+
+	// Loop over the list of albums, looking for an
+	// album whose ID value matches the paramter.
+	for _, a := range albums {
+		if a.ID == intId {
+			c.IndentedJSON(http.StatusOK, a)
+			return
+		}
+	}
+
+	c.IndentedJSON(http.StatusNotFound, gin.H{"message": "Album not found."})
+}
+
 // ! ------------------ HANDLERS ------------------ ! //
 
 func main() {
@@ -92,7 +114,8 @@ func main() {
 	
 	router := gin.Default()
 	router.GET("/albums", getAlbums)
-	router.GET("/album", getAlbumById)
+	router.GET("/albums/:id", getAlbumById) // uses /albums/<id>
+	router.GET("/album", getAlbum) // uses /album?id=<id>
 	router.POST("/albums", postAlbums)
 
 	fmt.Printf("Running Application on http://localhost:8080\n")
