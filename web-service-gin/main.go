@@ -8,7 +8,11 @@ import (
 	"strconv"
 	"syscall"
 
+	docs "example/web-service-gin/docs"
+
 	"github.com/gin-gonic/gin"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 // album represents data about a record album.
@@ -28,12 +32,29 @@ var albums = []album{
 
 
 // + ------------------ HANDLERS ------------------ + //
-// getAlbums responds with the list of all albums as JSON.
+
+// getAlbums godoc
+// @Summary gets all albums
+// @Schemes
+// @Description gets all albums from the database.
+// @Tags albums
+// @Accept json
+// @Produce json
+// @Success 200 {object} []album "Successfully retrieved the albums"
+// @Router /albums [get]
 func getAlbums(c *gin.Context) {
 	c.IndentedJSON(http.StatusOK, albums)
 }
 
-// getAlbum responds with 1 album as JSON
+// getAlbum godoc
+// @Summary gets all albums
+// @Schemes
+// @Description gets one (1) album using a query.
+// @Tags albums
+// @Accept json
+// @Produce json
+// @Success 200 {object} album "Successfully fetched album."
+// @Router /album [get]
 func getAlbum(c *gin.Context) {
 	var id, found = c.GetQuery("id")
 
@@ -68,6 +89,16 @@ func getAlbum(c *gin.Context) {
 }
 
 // postAlbums adds a new album from JSON received in the request body.
+//
+// postAlbums godoc
+// @Summary adds a new album
+// @Schemes
+// @Description postAlbums adds a new album from JSON received in the request body.
+// @Tags albums
+// @Accept json
+// @Produce json
+// @Success 200 {object} album "Successfully added album."
+// @Router /albums [post]
 func postAlbums(c *gin.Context) {
 	var newAlbum album
 
@@ -107,20 +138,42 @@ func getAlbumById(c *gin.Context) {
 
 // ! ------------------ HANDLERS ------------------ ! //
 
+// @title           Carlo's Album API
+// @version         1.0
+// @description     This is a generated swagger API from the Album API.
+// @termsOfService  http://swagger.io/terms/
+
+// @contact.name   API Support
+// @contact.url    http://www.swagger.io/support
+// @contact.email  support@swagger.io
+
+// @license.name  Apache 2.0
+// @license.url   http://www.apache.org/licenses/LICENSE-2.0.html
+
+// @host      localhost:8080
+// @BasePath  /
+
+// @securityDefinitions.basic  BasicAuth
+
+// @externalDocs.description  OpenAPI
+// @externalDocs.url          https://swagger.io/resources/open-api/
 func main() {
 	// Create a channel to receive signals.
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 	
+	docs.SwaggerInfo.Title = "Swagger Example API"
+
 	router := gin.Default()
 	router.GET("/albums", getAlbums)
 	router.GET("/albums/:id", getAlbumById) // uses /albums/<id>
 	router.GET("/album", getAlbum) // uses /album?id=<id>
 	router.POST("/albums", postAlbums)
+	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	fmt.Printf("Running Application on http://localhost:8080\n")
 
-	router.Run("localhost:8080")
+	router.Run("127.0.0.1:8080")
 
 	// Block until a signal is received.
 	<-quit
