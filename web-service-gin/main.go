@@ -47,7 +47,7 @@ func getAlbums(c *gin.Context) {
 }
 
 // getAlbum godoc
-// @Summary gets all albums
+// @Summary  gets one (1) album using a query.
 // @Schemes
 // @Description gets one (1) album using a query.
 // @Tags albums
@@ -90,13 +90,12 @@ func getAlbum(c *gin.Context) {
 
 // postAlbums adds a new album from JSON received in the request body.
 //
-// postAlbums godoc
 // @Summary adds a new album
-// @Schemes
 // @Description postAlbums adds a new album from JSON received in the request body.
 // @Tags albums
 // @Accept json
 // @Produce json
+// @Param album body album true "Album object"
 // @Success 200 {object} album "Successfully added album."
 // @Router /albums [post]
 func postAlbums(c *gin.Context) {
@@ -169,7 +168,10 @@ func main() {
 	router.GET("/albums/:id", getAlbumById) // uses /albums/<id>
 	router.GET("/album", getAlbum) // uses /album?id=<id>
 	router.POST("/albums", postAlbums)
-	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+
+	// docs
+	router.GET("/docs", func(c *gin.Context) { c.Redirect(http.StatusPermanentRedirect, "/docs/index.html") })
+	router.GET("/docs/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	fmt.Printf("Running Application on http://localhost:8080\n")
 

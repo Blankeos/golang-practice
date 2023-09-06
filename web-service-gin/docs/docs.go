@@ -36,7 +36,7 @@ const docTemplate = `{
                 "tags": [
                     "albums"
                 ],
-                "summary": "gets all albums",
+                "summary": "gets one (1) album using a query.",
                 "responses": {
                     "200": {
                         "description": "Successfully fetched album.",
@@ -84,6 +84,17 @@ const docTemplate = `{
                     "albums"
                 ],
                 "summary": "adds a new album",
+                "parameters": [
+                    {
+                        "description": "Album object",
+                        "name": "album",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/main.album"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "Successfully added album.",

@@ -40,7 +40,7 @@ paths:
           description: Successfully fetched album.
           schema:
             $ref: '#/definitions/main.album'
-      summary: gets all albums
+      summary: gets one (1) album using a query.
       tags:
       - albums
   /albums:
@@ -64,6 +64,13 @@ paths:
       consumes:
       - application/json
       description: postAlbums adds a new album from JSON received in the request body.
+      parameters:
+      - description: Album object
+        in: body
+        name: album
+        required: true
+        schema:
+          $ref: '#/definitions/main.album'
       produces:
       - application/json
       responses:
