@@ -3,10 +3,7 @@ package main
 import (
 	"fmt"
 	"net/http"
-	"os"
-	"os/signal"
 	"strconv"
-	"syscall"
 
 	docs "example/web-service-gin/docs"
 
@@ -158,8 +155,8 @@ func getAlbumById(c *gin.Context) {
 // @externalDocs.url          https://swagger.io/resources/open-api/
 func main() {
 	// Create a channel to receive signals.
-	quit := make(chan os.Signal, 1)
-	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
+	// quit := make(chan os.Signal, 1)
+	// signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 	
 	docs.SwaggerInfo.Title = "Swagger Example API"
 
@@ -170,15 +167,21 @@ func main() {
 	router.POST("/albums", postAlbums)
 
 	// docs
-	router.GET("/docs", func(c *gin.Context) { c.Redirect(http.StatusPermanentRedirect, "/docs/index.html") })
-	router.GET("/docs/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+	docsGroup := router.Group("/docs")
+	{
+		docsGroup.GET("", func(c *gin.Context) {
+			fmt.Println("Redirecting to /docs/index.html")
+			c.Redirect(http.StatusFound, "/docs/index.html")
+		})
+		docsGroup.GET("/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+	}
 
 	fmt.Printf("Running Application on http://localhost:8080\n")
 
 	router.Run("127.0.0.1:8080")
 
 	// Block until a signal is received.
-	<-quit
+	// <-quit
 	
 	// Perform graceful shutdown here.
 }
