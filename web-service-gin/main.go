@@ -50,6 +50,7 @@ func getAlbums(c *gin.Context) {
 // @Tags albums
 // @Accept json
 // @Produce json
+// @Param id query int true "album search by id"
 // @Success 200 {object} album "Successfully fetched album."
 // @Router /album [get]
 func getAlbum(c *gin.Context) {

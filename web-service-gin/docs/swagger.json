@@ -31,6 +31,15 @@
                     "albums"
                 ],
                 "summary": "gets one (1) album using a query.",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "album search by id",
+                        "name": "id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "Successfully fetched album.",

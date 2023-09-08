@@ -20,3 +20,7 @@ Writing as of 9/9/2023, I really like it so far. I configured toml and created m
        # kill processes
        taskkill /F /PID 6146 # 6146 is the PID
    ```
+
+3. Setup Swagger docs using this [swaggo/swag](https://github.com/swaggo/swag)
+
+4. Always do `swag init` after changing documentation.

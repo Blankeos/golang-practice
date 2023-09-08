@@ -33,6 +33,12 @@ paths:
       consumes:
       - application/json
       description: gets one (1) album using a query.
+      parameters:
+      - description: album search by id
+        in: query
+        name: id
+        required: true
+        type: integer
       produces:
       - application/json
       responses:
