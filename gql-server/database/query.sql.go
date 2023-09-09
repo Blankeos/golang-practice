@@ -12,17 +12,45 @@ import (
 
 const createTodo = `-- name: CreateTodo :one
 INSERT INTO todos (
-    text
+    text,
+    user_id
+) VALUES (
+    ?1,
+    ?2
+)
+RETURNING id, text, done, user_id
+`
+
+type CreateTodoParams struct {
+	Text   sql.NullString `json:"text"`
+	UserID int64          `json:"user_id"`
+}
+
+func (q *Queries) CreateTodo(ctx context.Context, arg CreateTodoParams) (Todo, error) {
+	row := q.db.QueryRowContext(ctx, createTodo, arg.Text, arg.UserID)
+	var i Todo
+	err := row.Scan(
+		&i.ID,
+		&i.Text,
+		&i.Done,
+		&i.UserID,
+	)
+	return i, err
+}
+
+const createUser = `-- name: CreateUser :one
+INSERT INTO users (
+    name
 ) VALUES (
     ?
 )
-RETURNING id, text, done
+RETURNING id, name
 `
 
-func (q *Queries) CreateTodo(ctx context.Context, text sql.NullString) (Todo, error) {
-	row := q.db.QueryRowContext(ctx, createTodo, text)
-	var i Todo
-	err := row.Scan(&i.ID, &i.Text, &i.Done)
+func (q *Queries) CreateUser(ctx context.Context, name string) (User, error) {
+	row := q.db.QueryRowContext(ctx, createUser, name)
+	var i User
+	err := row.Scan(&i.ID, &i.Name)
 	return i, err
 }
 
@@ -37,19 +65,24 @@ func (q *Queries) DeleteTodo(ctx context.Context, id int64) error {
 }
 
 const getTodo = `-- name: GetTodo :one
-SELECT id, text, done from todos
+SELECT id, text, done, user_id from todos
 WHERE id = ? LIMIT 1
 `
 
 func (q *Queries) GetTodo(ctx context.Context, id int64) (Todo, error) {
 	row := q.db.QueryRowContext(ctx, getTodo, id)
 	var i Todo
-	err := row.Scan(&i.ID, &i.Text, &i.Done)
+	err := row.Scan(
+		&i.ID,
+		&i.Text,
+		&i.Done,
+		&i.UserID,
+	)
 	return i, err
 }
 
 const getTodos = `-- name: GetTodos :many
-SELECT id, text, done FROM todos
+SELECT id, text, done, user_id FROM todos
 ORDER BY text
 `
 
@@ -62,7 +95,12 @@ func (q *Queries) GetTodos(ctx context.Context) ([]Todo, error) {
 	var items []Todo
 	for rows.Next() {
 		var i Todo
-		if err := rows.Scan(&i.ID, &i.Text, &i.Done); err != nil {
+		if err := rows.Scan(
+			&i.ID,
+			&i.Text,
+			&i.Done,
+			&i.UserID,
+		); err != nil {
 			return nil, err
 		}
 		items = append(items, i)
@@ -74,4 +112,62 @@ func (q *Queries) GetTodos(ctx context.Context) ([]Todo, error) {
 		return nil, err
 	}
 	return items, nil
+}
+
+const getTodosWithUser = `-- name: GetTodosWithUser :many
+SELECT todos.id, todos.text, todos.done, todos.user_id, users.id, users.name
+FROM todos
+LEFT JOIN users ON todos.user_id = users.id
+ORDER BY text
+`
+
+type GetTodosWithUserRow struct {
+	ID     int64          `json:"id"`
+	Text   sql.NullString `json:"text"`
+	Done   sql.NullBool   `json:"done"`
+	UserID int64          `json:"user_id"`
+	ID_2   sql.NullInt64  `json:"id_2"`
+	Name   sql.NullString `json:"name"`
+}
+
+func (q *Queries) GetTodosWithUser(ctx context.Context) ([]GetTodosWithUserRow, error) {
+	rows, err := q.db.QueryContext(ctx, getTodosWithUser)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetTodosWithUserRow
+	for rows.Next() {
+		var i GetTodosWithUserRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.Text,
+			&i.Done,
+			&i.UserID,
+			&i.ID_2,
+			&i.Name,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getUser = `-- name: GetUser :one
+SELECT id, name FROM users
+WHERE id = ? LIMIT 1
+`
+
+func (q *Queries) GetUser(ctx context.Context, id int64) (User, error) {
+	row := q.db.QueryRowContext(ctx, getUser, id)
+	var i User
+	err := row.Scan(&i.ID, &i.Name)
+	return i, err
 }

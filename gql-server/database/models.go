@@ -15,9 +15,10 @@ type Post struct {
 }
 
 type Todo struct {
-	ID   int64          `json:"id"`
-	Text sql.NullString `json:"text"`
-	Done sql.NullBool   `json:"done"`
+	ID     int64          `json:"id"`
+	Text   sql.NullString `json:"text"`
+	Done   sql.NullBool   `json:"done"`
+	UserID int64          `json:"user_id"`
 }
 
 type User struct {
