@@ -2,28 +2,44 @@
 #
 # https://gqlgen.com/getting-started/
 
+# A Todo, just cool stuff.
 type Todo {
-  id: ID!
+  # The Todo's ID.
+  id: Int!
+  # What this todo is about.
   text: String!
+  # True if the todo is already done.
   done: Boolean!
+  # The owner of the todo.
   user: User!
 }
 
+# A User type
 type User {
-  id: ID!
+  # The User's ID.
+  id: Int!
+  # The User's name.
   name: String!
 }
 
+# The Query root type.
 type Query {
+  # Gets an array of todos in the database.
   todos: [Todo!]!
+  # Gets an array of users in the database.
   users: [User!]!
 }
 
+# Input type for the create todo mutation.
 input NewTodo {
+  # The text that the new todo will have.
   text: String!
-  userId: String!
+  # The user that created this new todo.
+  userId: Int!
 }
 
+# The Mutation root type.
 type Mutation {
+  # Creates a new todo.
   createTodo(input: NewTodo!): Todo!
 }

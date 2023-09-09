@@ -6,28 +6,61 @@ package graph
 
 import (
 	"context"
-	"crypto/rand"
+	"database/sql"
 	"fmt"
+	"gql-server/database"
 	"gql-server/graph/model"
-	"math/big"
 )
 
 // CreateTodo is the resolver for the createTodo field.
 func (r *mutationResolver) CreateTodo(ctx context.Context, input model.NewTodo) (*model.Todo, error) {
-	rand, _ := rand.Int(rand.Reader, big.NewInt(100))
+	foundUser, err := database.DB.GetUser(ctx, int64(input.UserID))
+	if err != nil {
+		return nil, err
+	}
+
+	fmt.Printf("Found %v", foundUser)
+
+	insertedTodo, err := database.DB.CreateTodo(ctx, database.CreateTodoParams{
+		Text:   sql.NullString{String: input.Text, Valid: true},
+		UserID: foundUser.ID,
+	})
+	if err != nil {
+		return nil, err
+	}
+
 	todo := &model.Todo{
-		Text:   input.Text,
-		ID:     fmt.Sprintf("T%d", rand),
-		User:   &model.User{ID: input.UserID, Name: "user " + input.UserID},
+		Text:   insertedTodo.Text.String,
+		ID:     int(insertedTodo.ID),
+		User:   &model.User{ID: int(foundUser.ID), Name: foundUser.Name},
 		UserID: input.UserID,
 	}
-	r.todos = append(r.todos, todo)
+
 	return todo, nil
 }
 
 // Todos is the resolver for the todos field.
 func (r *queryResolver) Todos(ctx context.Context) ([]*model.Todo, error) {
-	return r.todos, nil
+	foundTodos, err := database.DB.GetTodosWithUser(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	todos := []*model.Todo{}
+	for _, foundTodo := range foundTodos {
+		todos = append(todos, &model.Todo{
+			ID:     int(foundTodo.ID),
+			Text:   foundTodo.Text.String,
+			Done:   foundTodo.Done.Bool,
+			UserID: int(foundTodo.UserID),
+			User: &model.User{
+				ID:   int(foundTodo.UserID),
+				Name: foundTodo.Name.String,
+			},
+		})
+	}
+
+	return todos, nil
 }
 
 // Users is the resolver for the users field.
@@ -37,7 +70,7 @@ func (r *queryResolver) Users(ctx context.Context) ([]*model.User, error) {
 
 // User is the resolver for the user field.
 func (r *todoResolver) User(ctx context.Context, obj *model.Todo) (*model.User, error) {
-	return &model.User{ID: obj.UserID, Name: "user " + obj.UserID}, nil
+	return &model.User{ID: obj.UserID, Name: obj.User.Name}, nil
 }
 
 // Mutation returns MutationResolver implementation.
@@ -59,6 +92,9 @@ type todoResolver struct{ *Resolver }
 //   - When renaming or deleting a resolver the old code will be put in here. You can safely delete
 //     it when you're done.
 //   - You have helper methods in this file. Move them out to keep these resolver files clean.
+func (r *todoResolver) ID(ctx context.Context, obj *model.Todo) (int, error) {
+	panic(fmt.Errorf("not implemented: ID - id"))
+}
 func (r *queryResolver) Carlos(ctx context.Context) ([]*model.Todo, error) {
 	return r.todos, nil
 }
