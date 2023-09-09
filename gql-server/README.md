@@ -12,3 +12,10 @@ go run github.com/99designs/gqlgen generate
 #### - Adding a comment like:
 
 ```
+
+### Run the app
+
+```
+go mod tidy # Install dependencies
+go run server.go # Run the app
+```

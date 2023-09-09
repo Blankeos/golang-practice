@@ -1,1 +1,1 @@
-scripts/*
+scripts/*.sh text eol=lf # prevents changing of line endings for scripts (so it works on unix)
