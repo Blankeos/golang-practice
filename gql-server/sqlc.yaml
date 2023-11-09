@@ -1,10 +1,15 @@
 version: 2
 sql:
   - engine: "sqlite"
+    # 👇 Schema can be a single .sql file or a folder containing *.sql files.
     schema: "./database/migrations"
+    # 👇 This will generate queries.
     queries: "./database/query.sql"
     gen:
       go:
+        # 👇 go 'package' that you will import in .go files.
         package: "database"
+        # 👇 folder to generate all .go files.
         out: "database"
+        # 👇 will create a snake_case json representation of your struct models e.g. `json:"id"`
         emit_json_tags: true
