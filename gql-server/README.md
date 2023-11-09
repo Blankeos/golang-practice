@@ -8,7 +8,7 @@ You need the following to run this project:
 
 - SQLC (Static SQL Builder CLI)
 - Goose (SQL Migrations CLI)
-- [MSYS2 (GCC)](https://www.msys2.org/) - (You need `gcc` binary to run sqlite3 on Windows. Follow the instructions on the link to install `gcc` This seems to be on GNU which isn't on Windows by default, not sure with MACOS and Linux though since they seem to have GNU by default.). Here is VSCode's instructions to [install MingW](https://code.visualstudio.com/docs/cpp/config-mingw)
+- [MSYS2 (GCC and Mingw32Make)](https://www.msys2.org/) - (You need `gcc` binary to run sqlite3 on Windows. Follow the instructions on the link to install `gcc` This seems to be on GNU which isn't on Windows by default, not sure with MACOS and Linux though since they seem to have GNU by default.). Here is VSCode's instructions to [install MingW](https://code.visualstudio.com/docs/cpp/config-mingw)
 
   ```sh
   # tl;dr of the instructions:
@@ -17,9 +17,12 @@ You need the following to run this project:
   # confirm you installed it with:
   gcc --version
   # Install the tool chain, Press Enter with (default=all), and then Y to install.
-  https://code.visualstudio.com/docs/cpp/config-mingw
+  pacman -S --needed base-devel mingw-w64-ucrt-x86_64-toolchain
   # Go to environment variables, add this to Path:
   C:\msys64\ucrt64\bin
+
+  # This should also have installed mingw32-make.exe (go to the C:\msys64\ucrt64\bin to find this )
+  # Then, just rename `mingw32-make.exe` to `make.exe`, so we can easily use it on Windows as well.
   ```
 
 - Make
@@ -56,7 +59,8 @@ sh scripts/migrate
 #### 4. Run the app
 
 ```sh
-go run server.go
+# This basically builds and runs go runs the project in `/bin/gql-server`
+make run
 ```
 
 ### 💿 Working with the Database

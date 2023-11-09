@@ -40,11 +40,10 @@ func main() {
 	log.Fatal(http.ListenAndServe(":"+port, nil))
 }
 
-
 func initializeDB() error {
 	// Initialize the database connection
 	dataSource := "database/todos.db"
-	
+
 	if err := database.Init(dataSource); err != nil {
 		return err
 	}
