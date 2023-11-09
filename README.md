@@ -7,7 +7,7 @@ Projects on this repo:
 1. salary - estimates salary based on hourly, daily, and monthly rate.
 2. simple-webserver - easy app that uses no frameworks to listen to a port and serve static html
 3. fiber-crud - Book API with CRUD operations
-4. aternos-bot - WIP chromedp app that goes to Aternos and starts the server for you.
+4. aternos-bot - WIP chromedp app that goes to Aternos and starts the server for you. (NOT DONE)
 5. gql-server - Made a Todo GraphQL server based on 99designs/gqlgen tutorial. Extended with best practices like using a database (sqlite), sqlc (SQL Builder and typesafe db queries), and goose (Schema migrations).
 
 **Projects I went through on the Official Go Website:**
