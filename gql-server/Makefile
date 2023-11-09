@@ -5,10 +5,10 @@ run: build
 	./bin/gql-server
 
 migrate:
-	source ./scripts/create_migration.sh
+	sh ./scripts/migrate.sh
 
 generate:
-	source ./scripts/generate.sh
+	sh ./scripts/generate.sh
 
 test:
 	go test -v ./...
